@@ -11,6 +11,8 @@
 #include <tlhelp32.h>
 #include <wbemidl.h>
 
+// From: https://stackoverflow.com/a/20082113/262458
+
 int
 main(int argc, char **argv)
 {
