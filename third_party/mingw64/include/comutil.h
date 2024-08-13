@@ -409,8 +409,8 @@ public:
   _variant_t(char cSrc) throw();
   _variant_t(unsigned short usSrc) throw();
   _variant_t(unsigned __LONG32 ulSrc) throw();
-  _variant_t(int iSrc) throw();
 #ifndef __CYGWIN__
+  _variant_t(int iSrc) throw();
   _variant_t(unsigned int uiSrc) throw();
 #endif
   __MINGW_EXTENSION _variant_t(__int64 i8Src) throw();
@@ -603,11 +603,11 @@ inline _variant_t::_variant_t(unsigned __LONG32 ulSrc) throw() {
   V_VT(this) = VT_UI4;
   V_UI4(this) = ulSrc;
 }
+#ifndef __CYGWIN__
 inline _variant_t::_variant_t(int iSrc) throw() {
   V_VT(this) = VT_INT;
   V_INT(this) = iSrc;
 }
-#ifndef __CYGWIN__
 inline _variant_t::_variant_t(unsigned int uiSrc) throw() {
   V_VT(this) = VT_UINT;
   V_UINT(this) = uiSrc;

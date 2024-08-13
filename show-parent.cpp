@@ -1,6 +1,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define _WIN32_DCOM
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
 
@@ -54,7 +55,7 @@ main(int argc, char **argv)
 			result->Get(L"ProcessId", 0, &process_id, 0, 0);
 			result->Get(L"CommandLine", 0, &command_line, 0, 0);
 
-			if (process_id.uintVal == pid)
+			if (process_id.uintVal == ppid)
 			{
 				wchar_t		*command_line_utf16 = command_line.bstrVal;
 				size_t		 size = wcslen(command_line_utf16) + 1;
