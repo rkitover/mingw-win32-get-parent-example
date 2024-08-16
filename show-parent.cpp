@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <wchar.h>
 
+#ifdef __CYGWIN__
 #define sprintf_s sprintf
+#endif
 
 #include <windows.h>
 #include <comutil.h>
