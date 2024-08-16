@@ -12,7 +12,15 @@
 #include <tlhelp32.h>
 #include <wbemidl.h>
 
-// From: https://stackoverflow.com/a/20082113/262458
+// The code for retrieving the parent process id on Windows using the Tool Help
+// library is based on the example from:
+// 
+// https://stackoverflow.com/a/558251/262458
+// 
+// , and the code for the WMI query to retrieve the commandline is from:
+// 
+// https://stackoverflow.com/a/20082113/262458
+// .
 
 int
 main(int argc, char **argv)
