@@ -63,9 +63,6 @@ main(int argc, char **argv)
 			VARIANT process_id;
 			VARIANT command_line;
 
-			result->Get(L"ProcessId", 0, &process_id, 0, 0);
-			ppid = process_id.uintVal;
-
 			result->Get(L"CommandLine", 0, &command_line, 0, 0);
 
 			wchar_t		*command_line_utf16 = command_line.bstrVal;
