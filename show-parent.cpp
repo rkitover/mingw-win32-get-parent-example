@@ -9,6 +9,7 @@
 
 #include <windows.h>
 #include <comutil.h>
+#include <tlhelp32.h>
 #include <wbemidl.h>
 
 // From: https://stackoverflow.com/a/20082113/262458
@@ -18,10 +19,23 @@ main(int argc, char **argv)
 {
 	int			 pid = argv[1] ? atoi(argv[1]) : GetCurrentProcessId();
 	int			 ppid = -1;
+	HANDLE			 h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	HRESULT			 hr = E_FAIL;
+	PROCESSENTRY32		 pe = { 0 };
 	IWbemLocator		*wbem_locator  = NULL;
 	IWbemServices		*wbem_services = NULL;
 	IEnumWbemClassObject	*enum_wbem  = NULL;
+
+	pe.dwSize = sizeof(PROCESSENTRY32);
+
+	if (Process32First(h, &pe)) {
+		do {
+			if (pe.th32ProcessID == pid)
+				ppid = pe.th32ParentProcessID;
+		} while (Process32Next(h, &pe));
+	}
+
+	CloseHandle(h);
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 	CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
@@ -29,8 +43,7 @@ main(int argc, char **argv)
 
 	wbem_locator->ConnectServer(L"ROOT\\CIMV2", NULL, NULL, NULL, 0, NULL, NULL, &wbem_services);
 	wchar_t *query = new wchar_t[4096];
-	swprintf(query, 4096,
-L"select processid, commandline from win32_process where processid = (select parentprocessid from win32_process where processid = %d)", pid);
+	swprintf(query, 4096, L"select commandline from win32_process where processid = %d", ppid);
 	wbem_services->ExecQuery(L"WQL", query, WBEM_FLAG_FORWARD_ONLY, NULL, &enum_wbem);
 	delete[] query;
 
