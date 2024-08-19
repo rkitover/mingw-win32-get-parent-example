@@ -11,6 +11,7 @@
 
 #include <windows.h>
 #include <comutil.h>
+#include <stringapiset.h>
 #include <tlhelp32.h>
 #include <wbemidl.h>
 
@@ -68,10 +69,10 @@ main(int argc, char **argv)
 			result->Get(L"CommandLine", 0, &command_line, 0, 0);
 
 			wchar_t		*command_line_utf16 = command_line.bstrVal;
-			size_t		 size = wcslen(command_line_utf16) + 1;
+			size_t		 size = WideCharToMultiByte(CP_UTF8, 0, command_line_utf16, -1, NULL, 0, NULL, NULL) + 1;
 			char		*command_line_utf8 = new char[size];
 
-			wcstombs(command_line_utf8, command_line_utf16, size);
+			WideCharToMultiByte(CP_UTF8, 0, command_line_utf16, -1, command_line_utf8, size, NULL, NULL);
 
 			SysFreeString(command_line_utf16);
 
