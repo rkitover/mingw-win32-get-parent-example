@@ -1,19 +1,21 @@
 .PHONY: clean
 
+all: show-parent.exe show-process.exe
+
 ifeq ($(CC), cl)
 
-show-parent.exe: show-parent.cpp Makefile
-	cl .\show-parent.cpp /Fe:show-parent.exe ole32.lib oleaut32.lib wbemuuid.lib
+%.exe: %.cpp Makefile
+	cl .\$< /Fe:$@ ole32.lib oleaut32.lib wbemuuid.lib
 
 clean:
-	del show-parent.exe show-parent.o* .*.un~
+	del show-*.exe show-*.o* .*.un~
 
 else
 
-show-parent.exe: show-parent.cpp Makefile
-	g++ -fpermissive -Wno-write-strings -O2 -isystem third_party/mingw64/include show-parent.cpp -o show-parent.exe -lole32 -loleaut32 -lwbemuuid
+%.exe: %.cpp Makefile
+	g++ -fpermissive -Wno-write-strings -O2 -isystem third_party/mingw64/include $< -o $@ -lole32 -loleaut32 -lwbemuuid
 
 clean:
-	rm -f show-parent.exe show-parent.o* .*.un~
+	rm -f show-*.exe show-*.o* .*.un~
 
 endif

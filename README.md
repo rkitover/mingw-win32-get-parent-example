@@ -12,5 +12,6 @@ Should also work on Cygwin with the relevant packages installed.
 
 For MSVC run `make CC=cl`.
 
-The resulting executable is `show-parent.exe`, which takes an optional argument
-for the pid to look up, otherwise it will use its own pid.
+The resulting executables are `show-parent.exe` and `show-process.exe`, which
+take an optional argument for the pid to look up, otherwise they will use their
+own pid.

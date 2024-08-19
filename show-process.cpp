@@ -11,41 +11,16 @@
 #include <windows.h>
 #include <comutil.h>
 #include <stringapiset.h>
-#include <tlhelp32.h>
 #include <wbemidl.h>
-
-// The code for retrieving the parent process id on Windows using the Tool Help
-// library is based on the example from:
-// 
-// https://stackoverflow.com/a/558251/262458
-// 
-// , and the code for the WMI query to retrieve the commandline is from:
-// 
-// https://stackoverflow.com/a/20082113/262458
-// .
 
 int
 main(int argc, char **argv)
 {
 	int			 pid = argv[1] ? std::atoi(argv[1]) : GetCurrentProcessId();
-	int			 ppid = -1;
-	HANDLE			 h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	HRESULT			 hr = E_FAIL;
-	PROCESSENTRY32		 pe = { 0 };
 	IWbemLocator		*wbem_locator  = NULL;
 	IWbemServices		*wbem_services = NULL;
 	IEnumWbemClassObject	*enum_wbem  = NULL;
-
-	pe.dwSize = sizeof(PROCESSENTRY32);
-
-	if (Process32First(h, &pe)) {
-		do {
-			if (pe.th32ProcessID == pid)
-				ppid = pe.th32ParentProcessID;
-		} while (Process32Next(h, &pe));
-	}
-
-	CloseHandle(h);
 
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 	CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_DEFAULT, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE, NULL);
@@ -53,7 +28,7 @@ main(int argc, char **argv)
 
 	wbem_locator->ConnectServer(L"ROOT\\CIMV2", NULL, NULL, NULL, 0, NULL, NULL, &wbem_services);
 	wchar_t *query = new wchar_t[4096];
-	swprintf(query, 4096, L"select commandline from win32_process where processid = %d", ppid);
+	swprintf(query, 4096, L"select commandline from win32_process where processid = %d", pid);
 	wbem_services->ExecQuery(L"WQL", query, WBEM_FLAG_FORWARD_ONLY, NULL, &enum_wbem);
 	delete[] query;
 
@@ -75,7 +50,7 @@ main(int argc, char **argv)
 
 			SysFreeString(command_line_utf16);
 
-			std::cout << ppid << ": " << pid << ": " << command_line_utf8 << std::endl;
+			std::cout << pid << ": " << command_line_utf8 << std::endl;
 
 			delete command_line_utf8;
 
